@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const Form = (props) => {
-  const { addMember } = props;
-  const [member, setMember] = useState({
-    isim: "",
-    email: "",
-    rol: "",
-  });
+  const initialState = { isim: "", email: "", rol: "" };
+  const { addMember, editMemberFn, editMember } = props;
+  const [member, setMember] = useState(editMember || initialState);
+  useEffect(() => {
+    if (editMember) {
+      setMember(editMember);
+    }
+  }, [editMember]);
   const changeHandler = (e) => {
     const { name, value } = e.target;
     const newMemberState = { ...member, [name]: value };
@@ -15,7 +17,11 @@ const Form = (props) => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    addMember(member);
+    if (editMember) {
+      editMemberFn(member);
+    } else {
+      addMember(member);
+    }
   };
   return (
     <>
@@ -42,7 +48,11 @@ const Form = (props) => {
             onChange={(e) => changeHandler(e)}
           />
         </label>
-        <button type="submit">Ekle</button>
+        {editMember ? (
+          <button type="submit">Güncelle</button>
+        ) : (
+          <button type="submit">Ekle</button>
+        )}
       </form>
     </>
   );
